@@ -5,18 +5,20 @@ import StudentRegistrationDataService from "../services/registraion.service";
 function RegistrationForm(props) {
     const [name, setName] = useState(null);
     const [dob, setDob] = useState(null);
-    const [sclass, setSclass] = useState(null);
-    const [gender, setGender] = useState(null);
+    const [sclass, setSclass] = useState("I");
+    const [gender, setGender] = useState("male");
     const [email, setEmail] = useState(null);
-    const [division, setDivision] = useState(null);
+    const [division, setDivision] = useState("A");
 
     const [students, setStudetns] = useState([]);
 
     useEffect(() => {
         StudentRegistrationDataService.getAllStudentData()
             .then((response) => {
-                setStudetns(response.data);
-                console.log(response.data);
+                if (response.status === 200) {
+                    setStudetns(response.data);
+                }
+                
             })
             .catch((e) => {
                 console.log(e);
@@ -48,6 +50,24 @@ function RegistrationForm(props) {
     }
 
     function registerStudent() {
+        if(name === null || name === ""){
+            alert("enter name");
+            return;
+        }
+        if(dob === null){
+            alert("choose date of birth");
+            return;
+        }
+
+        if(email === null || email === ""){
+            alert("enter email");
+            return;
+        }
+        if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))){
+            alert("enter a valid email");
+            return;
+        }
+
         const data = {
             name,
             dob,
@@ -57,10 +77,12 @@ function RegistrationForm(props) {
             gender,
         };
 
+
         StudentRegistrationDataService.create(data)
             .then((response) => {
-                console.log(response.data);
-                setStudetns(response.data);
+                if (response.status === 201) {
+                    setStudetns(response.data);
+                }
             })
             .catch((e) => {
                 console.log(e);
@@ -100,7 +122,7 @@ function RegistrationForm(props) {
                     <div className="input-group mb-3 py-3">
                         <label>
                             Class
-                            <select onChange={onChangeClass}>
+                            <select value={sclass} onChange={onChangeClass}>
                                 <option value="I">I</option>
                                 <option value="II">II</option>
                                 <option value="III">III</option>
@@ -119,7 +141,7 @@ function RegistrationForm(props) {
                     <div className="input-group mb-3 py-2">
                         <label className="form-label">
                             Division
-                            <select onChange={onChangeDivision}>
+                            <select value={division} onChange={onChangeDivision}>
                                 <option value="A">A</option>
                                 <option value="B">B</option>
                                 <option value="C">C</option>
@@ -145,6 +167,7 @@ function RegistrationForm(props) {
                             id="male"
                             value="male"
                             name="gender"
+                            checked={true}
                             className="form-check-input"
                             onChange={onChangeGender}
                         ></input>
@@ -176,7 +199,7 @@ function RegistrationForm(props) {
             </div>
 
             {(students !== [] || students !== null) && students.length !== 0 ? (
-                <div className="alignright">
+                <div className="alignright pb-2">
                     <table>
                         <thead>
                             <tr>
@@ -207,7 +230,7 @@ function RegistrationForm(props) {
                     </table>
                 </div>
             ) : (
-                <div>loding</div>
+                <div></div>
             )}
         </>
     );

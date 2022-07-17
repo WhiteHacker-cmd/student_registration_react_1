@@ -1,5 +1,5 @@
 import "./App.css"
-import RegistrationForm from "./components/registrationForm"
+import RegistrationForm from "./components/mainComponent"
 
 
 import "bootstrap/dist/css/bootstrap.min.css";
